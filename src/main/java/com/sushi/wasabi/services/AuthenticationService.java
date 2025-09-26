@@ -1,5 +1,7 @@
 package com.sushi.wasabi.services;
 
+import com.sushi.wasabi.common.exception.InvalidCredentialsException;
+import com.sushi.wasabi.common.exception.UserAlreadyExistsException;
 import com.sushi.wasabi.dto.AuthenticationRequest;
 import com.sushi.wasabi.dto.AuthenticationResponse;
 import com.sushi.wasabi.dto.RegisterRequest;
@@ -9,6 +11,7 @@ import com.sushi.wasabi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,10 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("User with email " + registerRequest.getEmail() + " already exists");
+        }
+
         var user = User.builder()
                 .firstName(registerRequest.getFirstName())
                 .lastName(registerRequest.getLastName())
@@ -44,7 +51,14 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
-        var user = userRepository.findByEmail(authenticationRequest.getEmail()).orElseThrow(()-> new IllegalArgumentException("Invalid email or password"));
+        var user = userRepository.findByEmail(authenticationRequest.getEmail()).orElseThrow(()-> new UsernameNotFoundException("User not found with email: " + authenticationRequest.getEmail()));
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
+            );
+        } catch (Exception e) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefresh(new HashMap<>(), user);
         return AuthenticationResponse.builder()

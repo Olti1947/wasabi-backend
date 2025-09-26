@@ -21,9 +21,9 @@ import java.util.UUID;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private UUID id;
+    private int id;
 
     @Column(nullable = false)
     private String firstName;
@@ -33,9 +33,6 @@ public class User implements UserDetails {
 
     @Column(unique = true, length = 100, nullable = false)
     private String email;
-
-    @Column(nullable = false)
-    private String username;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -48,13 +45,13 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     @Override
