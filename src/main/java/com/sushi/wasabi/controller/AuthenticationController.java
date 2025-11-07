@@ -3,6 +3,7 @@ package com.sushi.wasabi.controller;
 import com.sushi.wasabi.dto.AuthenticationRequest;
 import com.sushi.wasabi.dto.AuthenticationResponse;
 import com.sushi.wasabi.dto.RegisterRequest;
+import com.sushi.wasabi.dto.TokenRequest;
 import com.sushi.wasabi.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +27,15 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
+        log.info("I came here");
         AuthenticationResponse res = authenticationService.authenticate(authenticationRequest);
         log.info("User authenticated: {}", authenticationRequest.getEmail());
         return ResponseEntity.ok(res);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticationResponse> refresh(@RequestParam("token") String refreshToken) {
-        AuthenticationResponse res = authenticationService.refreshToken(refreshToken);
+    public ResponseEntity<AuthenticationResponse> refresh(@RequestBody TokenRequest refreshToken) {
+        AuthenticationResponse res = authenticationService.refreshToken(refreshToken.getToken());
         return ResponseEntity.ok(res);
     }
 

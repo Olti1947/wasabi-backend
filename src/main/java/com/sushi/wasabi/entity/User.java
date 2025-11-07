@@ -1,5 +1,6 @@
 package com.sushi.wasabi.entity;
 
+import com.sushi.wasabi.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,6 +53,16 @@ public class User implements UserDetails {
 
     public String getPassword() {
         return password;
+    }
+
+    public UserDto getUserInfo() {
+        return UserDto.builder()
+                .id(this.getId())
+                .email(this.getEmail())
+                .role(this.getRole())
+                .firstName(this.getFirstName())
+                .lastName(this.getLastName())
+                .build();
     }
 
     @Override

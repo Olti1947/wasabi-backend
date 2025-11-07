@@ -46,6 +46,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .authenticationToken(jwtToken)
                 .refreshToken(refreshToken)
+                .user(user.getUserInfo())
                 .build();
     }
 
@@ -64,6 +65,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .authenticationToken(jwtToken)
                 .refreshToken(refreshToken)
+                .user(user.getUserInfo())
                 .build();
     }
 
