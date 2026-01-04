@@ -55,7 +55,7 @@ public class SecurityConfiguration {
 
                         .permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+                        .requestMatchers("/api/v1/user/**","/api/foods/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
 
                         .anyRequest().authenticated())
 

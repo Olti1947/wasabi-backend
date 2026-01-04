@@ -27,7 +27,6 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
-        log.info("I came here");
         AuthenticationResponse res = authenticationService.authenticate(authenticationRequest);
         log.info("User authenticated: {}", authenticationRequest.getEmail());
         return ResponseEntity.ok(res);
