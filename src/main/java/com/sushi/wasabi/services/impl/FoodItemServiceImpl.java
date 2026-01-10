@@ -3,6 +3,7 @@ package com.sushi.wasabi.services.impl;
 import com.sushi.wasabi.entity.FoodItem;
 import com.sushi.wasabi.repository.FoodItemRepository;
 import com.sushi.wasabi.services.FoodItemService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,4 +31,11 @@ public class FoodItemServiceImpl implements FoodItemService {
 
             return foodItemRepository.searchFoods(search.toLowerCase(), pageRequest);
         }
+
+    @Override
+    public FoodItem getById(Long id) {
+        return foodItemRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(
+                "Food item with id: " + id + " not found"
+        ));
+    }
 }
