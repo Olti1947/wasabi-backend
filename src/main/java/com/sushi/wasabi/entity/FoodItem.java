@@ -1,8 +1,11 @@
 package com.sushi.wasabi.entity;
 
+import com.sushi.wasabi.config.StringListJsonConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,4 +21,8 @@ public class FoodItem {
     private String description;
     private double price;
     private String imageUrl;
+
+    @Column(columnDefinition = "jsonb")
+    @Convert(converter = StringListJsonConverter.class)
+    private List<String> ingredients;
 }

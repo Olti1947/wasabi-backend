@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
     @Query("""
-        SELECT f FROM FoodItem f
-        WHERE LOWER(f.name) LIKE %:search%
-           OR LOWER(f.description) LIKE %:search%
-    """)
+    SELECT f FROM FoodItem f
+    WHERE LOWER(COALESCE(f.name, '')) LIKE %:search%
+       OR LOWER(COALESCE(f.description, '')) LIKE %:search%
+""")
     Page<FoodItem> searchFoods(
             @Param("search") String search,
             Pageable pageable
