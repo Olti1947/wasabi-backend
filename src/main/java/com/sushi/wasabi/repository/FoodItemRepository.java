@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
+public interface FoodItemRepository extends JpaRepository<FoodItem, Integer> {
     @Query("""
     SELECT f FROM FoodItem f
     WHERE LOWER(COALESCE(f.name, '')) LIKE %:search%
