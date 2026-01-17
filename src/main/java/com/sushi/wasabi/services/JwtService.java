@@ -1,5 +1,6 @@
 package com.sushi.wasabi.services;
 
+import com.sushi.wasabi.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -7,6 +8,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -93,6 +96,22 @@ public Boolean validateToken(String token){
         return isTokenValid(token, userDetails);
     }
     return false;
+}
+
+public Integer getCurrentUserId() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (authentication == null || !authentication.isAuthenticated()) {
+        throw new IllegalStateException("No authenticated user");
+    }
+
+    Object principal = authentication.getPrincipal();
+
+    if (principal instanceof User user) {
+        return user.getId();
+    }
+
+    throw new IllegalStateException("Authenticated principal is not User");
 }
 
 }

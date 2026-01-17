@@ -1,7 +1,9 @@
 package com.sushi.wasabi.services;
 
 import com.sushi.wasabi.dto.CartItemRequest;
+import com.sushi.wasabi.dto.CheckoutPreviewDto;
 import com.sushi.wasabi.dto.CheckoutRequest;
+import com.sushi.wasabi.dto.DiscountDto;
 import com.sushi.wasabi.entity.*;
 import com.sushi.wasabi.enums.DiscountType;
 import com.sushi.wasabi.enums.OrderStatus;
@@ -13,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,6 +30,7 @@ public class CheckoutService {
     private final OrderItemRepository orderItemRepository;
     private final OrderDiscountRepository orderDiscountRepository;
     private final DiscountProductRepository discountProductRepository;
+    private final DiscountService discountService;
 
     private Map<Integer, FoodItem> loadFoodItems(CheckoutRequest request) {
 
@@ -56,7 +56,7 @@ public class CheckoutService {
             BigDecimal subtotal,
             List<OrderItem> orderItems
     ){
-        UserDiscount userDiscount = userDiscountRepository.findByUserIdAndDiscountIdAndStatus(
+        UserDiscount userDiscount = userDiscountRepository.findByUser_IdAndDiscount_IdAndStatus(
                 user.getId(),
                 discountId,
                 UserDiscountStatus.ACTIVE
@@ -84,7 +84,7 @@ public class CheckoutService {
                 .collect(Collectors.toSet());
 
         boolean applies = discountProductRepository
-                .existsByIdDiscountIdAndProductIdIn(discount.getId(),
+                .existsByIdDiscountIdAndIdProductIdIn(discount.getId(),
                         productIdsInCart);
 
         if(!applies){
@@ -196,5 +196,90 @@ public class CheckoutService {
         return order;
     }
 
+    @Transactional
+    public CheckoutPreviewDto preview(User user, CheckoutRequest request) {
+        if(request.getItems() == null || request.getItems().isEmpty()){
+            throw new IllegalArgumentException("Cart is empty");
+        }
+
+        Map<Integer, FoodItem> foodItems = loadFoodItems(request);
+        BigDecimal subtotal = BigDecimal.ZERO;
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        for(CartItemRequest cartItem: request.getItems()){
+            FoodItem foodItem = foodItems.get(cartItem.getFoodItemId());
+            BigDecimal itemTotal = foodItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+            subtotal = subtotal.add(itemTotal);
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setFoodItem(foodItem);
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setUnitPrice(foodItem.getPrice());
+            orderItem.setTotalPrice(itemTotal);
+            orderItems.add(orderItem);
+        }
+
+        BigDecimal discountTotal = BigDecimal.ZERO;
+        Discount appliedDiscount = null;
+
+        if(request.getDiscountId() != null){
+            DiscountResult result = applyDiscount(
+                    user,
+                    request.getDiscountId(),
+                    subtotal,
+                    orderItems
+            );
+
+            discountTotal = result.discountAmount();
+            appliedDiscount = result.discount();
+        }
+        BigDecimal total = subtotal.subtract(discountTotal);
+
+        return CheckoutPreviewDto.builder()
+                .subtotal(subtotal)
+                .discount(discountTotal)
+                .total(total)
+                .appliedDiscount(appliedDiscount != null ? appliedDiscount.getTitle(): null)
+                .build();
+    }
+
+    public List<DiscountDto> applicableDiscounts(
+            List<CartItemRequest> request,
+            User user
+    ) {
+
+        if (request == null || request.isEmpty()) {
+            throw new IllegalArgumentException("Cart is empty");
+        }
+
+        List<DiscountDto> activeDiscounts =
+                discountService.getUserActiveDiscounts(user.getId());
+
+        if (activeDiscounts.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Long> discountIds = activeDiscounts.stream()
+                .map(DiscountDto::getId)
+                .collect(Collectors.toSet());
+
+        Set<Integer> productIds = request.stream()
+                .map(CartItemRequest::getFoodItemId)
+                .collect(Collectors.toSet());
+
+        Set<Long> applicableDiscountIds =
+                discountProductRepository.findApplicableDiscountIds(
+                        discountIds,
+                        productIds
+                );
+
+        if (applicableDiscountIds.isEmpty()) {
+            return List.of();
+        }
+
+        return activeDiscounts.stream()
+                .filter(d -> applicableDiscountIds.contains(d.getId()))
+                .toList();
+    }
 
 }

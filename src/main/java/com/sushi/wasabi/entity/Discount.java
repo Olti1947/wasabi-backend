@@ -29,6 +29,9 @@ public class Discount {
     @Column(nullable = false)
     private DiscountType type;
 
+    @Column(name = "imageurl", nullable = false)
+    private String imageUrl;
+
     @Column(nullable = false)
     private BigDecimal value;
 

@@ -22,7 +22,7 @@ public Page<FoodItem> getAllFoods(
 }
 
 @GetMapping("/{id}")
-public FoodItem getFoodById(@PathVariable Long id){
+public FoodItem getFoodById(@PathVariable Integer id){
     return foodItemService.getById(id);
 }
 }
