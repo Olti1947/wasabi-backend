@@ -8,5 +8,5 @@ import org.springframework.stereotype.Service;
 public interface FoodItemService {
     Page<FoodItem> getFoods(int page, int size, String search);
 
-    FoodItem getById(Long id);
+    FoodItem getById(Integer id);
 }

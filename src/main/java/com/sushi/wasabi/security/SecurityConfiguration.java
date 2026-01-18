@@ -51,11 +51,13 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/webjars/**")
+                                "/webjars/**",
+                                "/api/discounts/**"
+                        )
 
                         .permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers("/api/v1/user/**","/api/foods/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
+                        .requestMatchers("/api/v1/user/**","/api/foods/**", "/api/checkout/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
 
                         .anyRequest().authenticated())
 

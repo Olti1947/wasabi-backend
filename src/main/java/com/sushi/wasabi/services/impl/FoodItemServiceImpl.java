@@ -33,7 +33,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         }
 
     @Override
-    public FoodItem getById(Long id) {
+    public FoodItem getById(Integer id) {
         return foodItemRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(
                 "Food item with id: " + id + " not found"
         ));
