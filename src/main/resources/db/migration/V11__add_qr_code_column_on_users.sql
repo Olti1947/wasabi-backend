@@ -1,0 +1,2 @@
+ALTER TABLE public.users
+ADD COLUMN qr_code_token VARCHAR(64) UNIQUE NOT NULL;

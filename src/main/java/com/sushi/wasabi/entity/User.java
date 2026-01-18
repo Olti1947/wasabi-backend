@@ -41,6 +41,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Column(unique = true, nullable = false)
+    private String qrCodeToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -62,6 +65,7 @@ public class User implements UserDetails {
                 .role(this.getRole())
                 .firstName(this.getFirstName())
                 .lastName(this.getLastName())
+                .qrCodeToken(this.qrCodeToken)
                 .build();
     }
 
