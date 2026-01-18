@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,7 @@ public class AuthenticationService {
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(Role.USER)
+                .qrCodeToken(UUID.randomUUID().toString())
                 .build();
 
         userRepository.save(user);
