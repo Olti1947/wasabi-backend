@@ -1,0 +1,62 @@
+package com.sushi.wasabi.controller;
+
+import com.sushi.wasabi.entity.SupportMessage;
+import com.sushi.wasabi.services.ChatService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Controller;
+
+import java.security.Principal;
+
+@Controller
+@RequiredArgsConstructor
+public class ChatController {
+
+    private final SimpMessagingTemplate messagingTemplate;
+    private final ChatService chatService;
+
+    // 1️⃣ User sends message → broadcast to all admins
+    @MessageMapping("/support.send")
+    public void userToAdmin(@Payload SupportMessage message, Principal principal) {
+       SupportMessage saved =
+               chatService.saveUserMessage(message, principal.getName());
+
+        System.out.println("User → Admin: " + message);
+
+        // Broadcast to a topic that all admins subscribe to
+        messagingTemplate.convertAndSend("/topic/admin.support", saved);
+        chatService.publishAdminUnreadCounts();
+    }
+
+    // 2️⃣ Admin replies → send only to specific user
+    @MessageMapping("/support.reply")
+    public void adminToUser(@Payload SupportMessage message, Principal principal) {
+        if(principal instanceof UsernamePasswordAuthenticationToken auth
+        && auth.getAuthorities().stream()
+                .noneMatch(a -> a.getAuthority().equals("ADMIN"))){
+            throw new IllegalArgumentException("Not authorized");
+        }
+
+        SupportMessage saved =
+                chatService.saveAdminReply(message, "ADMIN");
+
+
+        System.out.println("Admin -> User: " + message);
+
+        // Send to specific user (the user must be authenticated in WS)
+        // Use /user/{username}/queue/support
+        if (message.getTo() != null) {
+            messagingTemplate.convertAndSendToUser(
+                    message.getTo(),               // username of the target user
+                    "/queue/support",             // destination on user's side
+                    saved
+            );
+
+        } else {
+            System.out.println("⚠️ No target user set in message!");
+        }
+    }
+}

@@ -27,7 +27,7 @@ public class SecurityConfiguration {
 
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8081")); // frontend dev server
+        config.setAllowedOriginPatterns(List.of("*")); // frontend dev server
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -52,7 +52,8 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/webjars/**",
-                                "/api/discounts/**"
+                                "/api/discounts/**",
+                        "/ws/**"
                         )
 
                         .permitAll()
