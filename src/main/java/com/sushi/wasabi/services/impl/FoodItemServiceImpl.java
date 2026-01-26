@@ -1,5 +1,7 @@
 package com.sushi.wasabi.services.impl;
 
+import com.sushi.wasabi.dto.FoodItemDto;
+import com.sushi.wasabi.dto.FoodItemRequest;
 import com.sushi.wasabi.entity.FoodItem;
 import com.sushi.wasabi.repository.FoodItemRepository;
 import com.sushi.wasabi.services.FoodItemService;
@@ -17,7 +19,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         private final FoodItemRepository foodItemRepository;
 
         @Override
-        public Page<FoodItem> getFoods(int page, int size, String search) {
+        public Page<FoodItemDto> getFoods(int page, int size, String search) {
 
             PageRequest pageRequest = PageRequest.of(
                     page,
@@ -25,11 +27,15 @@ public class FoodItemServiceImpl implements FoodItemService {
                     Sort.by(Sort.Direction.ASC, "name")
             );
 
+            Page<FoodItem> foods;
             if (search == null || search.trim().isEmpty()) {
-                return foodItemRepository.findAll(pageRequest);
+                foods = foodItemRepository.findAll(pageRequest);
+            } else {
+                foods = foodItemRepository.searchFoods(search.toLowerCase(), pageRequest);
             }
+            return foods.map(food -> food.toDto()
+            );
 
-            return foodItemRepository.searchFoods(search.toLowerCase(), pageRequest);
         }
 
     @Override
@@ -37,5 +43,23 @@ public class FoodItemServiceImpl implements FoodItemService {
         return foodItemRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(
                 "Food item with id: " + id + " not found"
         ));
+    }
+
+    @Override
+    public void addFoodItem(FoodItemRequest foodItemRequest, String imageUrl) {
+        FoodItem foodItem = new FoodItem();
+
+        foodItem.setName(foodItemRequest.getName());
+        foodItem.setDescription(foodItemRequest.getDescription());
+        foodItem.setImageUrl(imageUrl);
+        foodItem.setPrice(foodItemRequest.getPrice());
+        foodItem.setIngredients(foodItemRequest.getIngredients());
+
+        foodItemRepository.save(foodItem);
+    }
+
+    @Override
+    public void deleteFoodItem(Integer id) {
+        foodItemRepository.deleteById(id);
     }
 }

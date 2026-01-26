@@ -1,11 +1,16 @@
 package com.sushi.wasabi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sushi.wasabi.config.StringListJsonConverter;
+import com.sushi.wasabi.dto.FoodItemDto;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,7 +29,21 @@ public class FoodItem {
     private BigDecimal price;
     private String imageUrl;
 
+    @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    @Convert(converter = StringListJsonConverter.class)
     private List<String> ingredients;
+
+    @OneToMany(mappedBy = "foodItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DiscountProduct> discountProducts = new ArrayList<>();
+
+    public FoodItemDto toDto(){
+        return new FoodItemDto(
+                this.getId(),
+                this.getName(),
+                this.getDescription(),
+                this.getPrice(),
+                this.getImageUrl(),
+                this.getIngredients()
+        );
+    }
 }

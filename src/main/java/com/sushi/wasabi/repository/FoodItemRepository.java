@@ -19,4 +19,6 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Integer> {
             @Param("search") String search,
             Pageable pageable
     );
+
+    void deleteById(Integer id);
 }
