@@ -57,7 +57,7 @@ public class SecurityConfiguration {
                         )
 
                         .permitAll()
-                        .requestMatchers("/api/v1/admin/**","/api/foods/admin/**").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers("/api/v1/admin/**","/api/foods/admin/**","/api/admin/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/api/v1/user/**", "/api/checkout/**", "/api/foods/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())
 
                         .anyRequest().authenticated())

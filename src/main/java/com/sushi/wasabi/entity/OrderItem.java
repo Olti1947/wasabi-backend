@@ -1,5 +1,6 @@
 package com.sushi.wasabi.entity;
 
+import com.sushi.wasabi.dto.OrderItemAdminDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,4 +29,16 @@ public class OrderItem {
 
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
+
+    public OrderItemAdminDto mapToOrderItemAdminDto(){
+        OrderItemAdminDto dto = new OrderItemAdminDto();
+
+        dto.setFoodItemId(this.getFoodItem().getId());
+        dto.setQuantity(this.getQuantity());
+        dto.setFoodName(this.getFoodItem().getName());
+        dto.setUnitPrice(this.getUnitPrice());
+        dto.setTotalPrice(this.getTotalPrice());
+
+        return dto;
+    }
 }
