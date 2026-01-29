@@ -24,8 +24,7 @@ public class ChatService {
             SupportMessage dto,
             String fromUser
     ) {
-        ChatMessageEntity entity =
-                mapper.toEntity(dto, fromUser, "ADMIN");
+        ChatMessageEntity entity = mapper.toEntity(dto, fromUser, "ADMIN");
         repository.save(entity);
         return mapper.toDto(entity);
     }

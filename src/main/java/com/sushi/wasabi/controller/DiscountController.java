@@ -1,14 +1,21 @@
 package com.sushi.wasabi.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sushi.wasabi.dto.ActivateDiscountRequest;
+import com.sushi.wasabi.dto.DiscountAdminRequest;
 import com.sushi.wasabi.dto.DiscountDto;
 import com.sushi.wasabi.entity.User;
 import com.sushi.wasabi.services.DiscountService;
+import com.sushi.wasabi.services.ImageService;
 import com.sushi.wasabi.services.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -20,6 +27,8 @@ public class DiscountController {
 
     private final DiscountService discountService;
     private final JwtService jwtService;
+    private final ImageService imageService;
+    private final ObjectMapper objectMapper;
 
     // 1️⃣ List all available discounts
     @GetMapping("/available")
@@ -43,5 +52,23 @@ public class DiscountController {
         Integer userId = jwtService.getCurrentUserId();
         List<DiscountDto> discounts = discountService.getUserActiveDiscounts(userId);
         return ResponseEntity.ok(discounts);
+    }
+
+    @PostMapping(value = "/admin",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> addDiscount(
+            @RequestPart("data") String data,
+            @RequestPart("image")MultipartFile image
+            ) throws JsonProcessingException {
+        DiscountAdminRequest discount = objectMapper.readValue(data, DiscountAdminRequest.class);
+        String imageUrl = imageService.uploadDiscountImage(image);
+        discountService.addDiscount(discount,imageUrl);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<Void> deleteDiscount(@PathVariable Long id) {
+        discountService.deleteDiscount(id);
+        return ResponseEntity.ok().build();
     }
 }
