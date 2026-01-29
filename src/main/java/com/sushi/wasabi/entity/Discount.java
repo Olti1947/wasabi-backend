@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="discounts")
@@ -48,4 +50,18 @@ public class Discount {
     private boolean active = true;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(
+            mappedBy = "discount",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<DiscountProduct> products = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "discount",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<UserDiscount> userDiscounts = new HashSet<>();
 }
