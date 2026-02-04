@@ -4,9 +4,9 @@ package com.sushi.wasabi.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sushi.wasabi.dto.ActivateDiscountRequest;
+import com.sushi.wasabi.dto.AdminUseDiscountDto;
 import com.sushi.wasabi.dto.DiscountAdminRequest;
 import com.sushi.wasabi.dto.DiscountDto;
-import com.sushi.wasabi.entity.User;
 import com.sushi.wasabi.services.DiscountService;
 import com.sushi.wasabi.services.ImageService;
 import com.sushi.wasabi.services.JwtService;
@@ -69,6 +69,12 @@ public class DiscountController {
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<Void> deleteDiscount(@PathVariable Long id) {
         discountService.deleteDiscount(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/admin/use")
+    public ResponseEntity<Void> useDiscount (@RequestBody AdminUseDiscountDto useDiscountDto) {
+        discountService.useDiscount(useDiscountDto.getUserId(), useDiscountDto.getDiscountId());
         return ResponseEntity.ok().build();
     }
 }

@@ -18,4 +18,5 @@ public interface UserDiscountRepository extends JpaRepository<UserDiscount, Long
     boolean existsByUser_IdAndDiscount_Id(Integer userId, Long discountId);
 
     List<UserDiscount> findByUser_IdAndStatusAndExpiresAtAfter(Integer userId, UserDiscountStatus status, LocalDateTime now);
+
 }

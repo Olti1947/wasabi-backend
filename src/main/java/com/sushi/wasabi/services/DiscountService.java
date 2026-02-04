@@ -50,6 +50,17 @@ public void activateDiscount(Integer userId, Long discountId){
     userDiscountRepository.save(userDiscount);
 }
 
+public void useDiscount(Integer userId, Long discountId) {
+    UserDiscount userDiscount = userDiscountRepository.findByUser_IdAndDiscount_IdAndStatus(userId, discountId, UserDiscountStatus.ACTIVE)
+            .orElseThrow(()-> new RuntimeException("Discount not available"));
+
+    if(userDiscount != null){
+        userDiscount.setUsedAt(LocalDateTime.now());
+        userDiscount.setStatus(UserDiscountStatus.USED);
+        userDiscountRepository.save(userDiscount);
+    }
+}
+
     public List<DiscountDto> getUserActiveDiscounts(Integer userId) {
         LocalDateTime now = LocalDateTime.now();
 
