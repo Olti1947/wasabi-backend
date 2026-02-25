@@ -4,6 +4,7 @@ import com.sushi.wasabi.entity.ChatMessageEntity;
 import com.sushi.wasabi.entity.SupportMessage;
 import com.sushi.wasabi.mapper.ChatMessageMapper;
 import com.sushi.wasabi.repository.ChatMessageRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -78,6 +79,7 @@ public List<SupportMessage> getConversationWithUser(String username){
                 ));
     }
 
+    @Transactional
     public void markMessagesFromUserAsRead(String username) {
         List<ChatMessageEntity> messages = repository.findUnreadConvo(username);
         messages.forEach(m -> m.setRead(true));

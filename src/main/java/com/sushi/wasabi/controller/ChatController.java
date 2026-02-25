@@ -1,7 +1,9 @@
 package com.sushi.wasabi.controller;
 
 import com.sushi.wasabi.entity.SupportMessage;
+import com.sushi.wasabi.entity.User;
 import com.sushi.wasabi.services.ChatService;
+import com.sushi.wasabi.services.PushNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -17,6 +19,7 @@ public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatService chatService;
+    private final PushNotificationService pushNotificationService;
 
     // 1️⃣ User sends message → broadcast to all admins
     @MessageMapping("/support.send")
@@ -54,7 +57,7 @@ public class ChatController {
                     "/queue/support",             // destination on user's side
                     saved
             );
-
+            pushNotificationService.sendToUserDevices(message.getTo(), "New message", message.getContent(), "chat-message");
         } else {
             System.out.println("⚠️ No target user set in message!");
         }

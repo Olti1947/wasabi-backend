@@ -1,14 +1,14 @@
 package com.sushi.wasabi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sushi.wasabi.dto.UserDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +19,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "deviceTokens") // Prevents logging from crashing
+@EqualsAndHashCode(exclude = "deviceTokens")
 public class User implements UserDetails {
 
     @Id
@@ -43,6 +45,15 @@ public class User implements UserDetails {
 
     @Column(unique = true, nullable = false)
     private String qrCodeToken;
+
+    @JsonIgnore
+    @OneToMany
+            (
+                    mappedBy = "user",
+                    orphanRemoval = true,
+                    cascade = CascadeType.ALL
+            )
+    List<DeviceToken> deviceTokens = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
