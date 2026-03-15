@@ -1,0 +1,2 @@
+ALTER TABLE public.users
+ADD COLUMN spending DECIMAL(10,2) DEFAULT 0;
