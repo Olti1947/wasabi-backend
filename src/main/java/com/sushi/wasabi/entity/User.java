@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,6 +47,9 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String qrCodeToken;
 
+    @Column
+    private BigDecimal spending;
+
     @JsonIgnore
     @OneToMany
             (
@@ -77,6 +81,7 @@ public class User implements UserDetails {
                 .firstName(this.getFirstName())
                 .lastName(this.getLastName())
                 .qrCodeToken(this.qrCodeToken)
+                .spending(this.spending)
                 .build();
     }
 
