@@ -1,13 +1,14 @@
 package com.sushi.wasabi.controller;
 
+import com.sushi.wasabi.dto.ApiResponse;
+import com.sushi.wasabi.dto.ChangeOrderStatusDto;
 import com.sushi.wasabi.dto.OrderAdminDto;
 import com.sushi.wasabi.dto.OrderItemAdminDto;
+import com.sushi.wasabi.enums.OrderStatus;
 import com.sushi.wasabi.services.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,8 +25,21 @@ public class OrderAdminController {
     }
 
     @GetMapping("/{orderId}")
-    public OrderAdminDto getOrderDetails(@PathVariable Long orderId){
+    public OrderAdminDto getOrderDetails(@PathVariable Long orderId
+    ){
         return orderService.getOrderDetails(orderId);
     }
 
+
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<ApiResponse<Void>> changeOrderStatus(@PathVariable Long orderId,
+                                                               @RequestBody ChangeOrderStatusDto dto
+                                                               ){
+        OrderStatus orderStatus = OrderStatus.valueOf(dto.getStatus());
+        orderService.changeOrderStatus(orderId, orderStatus);
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Order status changed successfully", null)
+        );
+
+    }
 }

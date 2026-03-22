@@ -8,8 +8,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,9 @@ public class FoodItem {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
     private String imageUrl;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")

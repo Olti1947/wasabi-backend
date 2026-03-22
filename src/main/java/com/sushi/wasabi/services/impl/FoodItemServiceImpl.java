@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class FoodItemServiceImpl implements FoodItemService {
 
             Page<FoodItem> foods;
             if (search == null || search.trim().isEmpty()) {
-                foods = foodItemRepository.findAll(pageRequest);
+                foods = foodItemRepository.findByDeletedAtIsNull(pageRequest);
             } else {
                 foods = foodItemRepository.searchFoods(search.toLowerCase(), pageRequest);
             }
@@ -40,7 +41,7 @@ public class FoodItemServiceImpl implements FoodItemService {
 
     @Override
     public FoodItem getById(Integer id) {
-        return foodItemRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(
+        return foodItemRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(()-> new EntityNotFoundException(
                 "Food item with id: " + id + " not found"
         ));
     }
@@ -60,6 +61,11 @@ public class FoodItemServiceImpl implements FoodItemService {
 
     @Override
     public void deleteFoodItem(Integer id) {
-        foodItemRepository.deleteById(id);
+        FoodItem foodItem = foodItemRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(
+                () -> new RuntimeException("There is no such item")
+        );
+
+        foodItem.setDeletedAt(LocalDateTime.now());
+        foodItemRepository.save(foodItem);
     }
 }

@@ -24,6 +24,7 @@ public class OrderAdminDto {
 
     private String phoneNumber;
     private String address;
+    private String comment;
 
     private List<OrderItemAdminDto> items;
     private List<OrderDiscountAdminDto> discounts;

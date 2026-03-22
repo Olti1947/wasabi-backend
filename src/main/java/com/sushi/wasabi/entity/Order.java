@@ -46,6 +46,9 @@ public class Order {
     @Column(columnDefinition = "TEXT")
     private String address;
 
+    @Column
+    private String comment;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public OrderAdminDto mapToAdminDto(){
@@ -72,6 +75,7 @@ public class Order {
         dto.setUserId(this.getUser().getId());
         dto.setCreatedAt(this.getCreatedAt());
         dto.setPhoneNumber(this.getPhoneNumber());
+        dto.setComment(this.getComment());
         dto.setAddress(this.getAddress());
 
         return dto;

@@ -2,7 +2,9 @@ package com.sushi.wasabi.enums;
 
 public enum OrderStatus {
     CREATED,
-    PAID,
+    IN_PROGRESS,
+    DELIVERY,
+    READY,
     CANCELLED,
     COMPLETED,
     REFUNDED
