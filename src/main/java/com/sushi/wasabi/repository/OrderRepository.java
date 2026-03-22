@@ -1,6 +1,8 @@
 package com.sushi.wasabi.repository;
 
 import com.sushi.wasabi.entity.Order;
+import com.sushi.wasabi.enums.OrderStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -30,5 +32,19 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         WHERE o.id = :orderId
     """)
     Optional<Order> findByIdWithDetails(Long orderId);
+
+    @Query("""
+    SELECT DISTINCT o FROM Order o
+    LEFT JOIN FETCH o.items i
+    LEFT JOIN FETCH i.foodItem
+    LEFT JOIN FETCH o.discounts d
+    LEFT JOIN FETCH d.discount
+    LEFT JOIN FETCH o.user
+    WHERE o.user.id = :userId
+      AND o.status IN ('CREATED', 'IN_PROGRESS', 'DELIVERY', 'READY', 'COMPLETED', 'CANCELLED')
+    ORDER BY o.createdAt DESC
+""")
+    List<Order> findCurrentOrder(Integer userId, Pageable pageable);
+
 }
 

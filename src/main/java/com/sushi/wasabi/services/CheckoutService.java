@@ -1,9 +1,6 @@
 package com.sushi.wasabi.services;
 
-import com.sushi.wasabi.dto.CartItemRequest;
-import com.sushi.wasabi.dto.CheckoutPreviewDto;
-import com.sushi.wasabi.dto.CheckoutRequest;
-import com.sushi.wasabi.dto.DiscountDto;
+import com.sushi.wasabi.dto.*;
 import com.sushi.wasabi.entity.*;
 import com.sushi.wasabi.enums.DiscountType;
 import com.sushi.wasabi.enums.OrderStatus;
@@ -11,6 +8,7 @@ import com.sushi.wasabi.enums.UserDiscountStatus;
 import com.sushi.wasabi.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,7 +37,7 @@ public class CheckoutService {
                 .map(CartItemRequest::getFoodItemId)
                 .collect(Collectors.toSet());
 
-        List<FoodItem> foodItems = foodItemRepository.findAllById(foodItemIds);
+        List<FoodItem> foodItems = foodItemRepository.findByIdInAndDeletedAtIsNull(foodItemIds);
 
         if (foodItems.size() != foodItemIds.size()) {
             throw new RuntimeException("One or more food items not found");
@@ -171,9 +169,11 @@ public class CheckoutService {
         order.setSubtotal(subtotal);
         order.setDiscountTotal(discountTotal);
         order.setTotal(total);
+        order.setAddress(request.getAddress());
+        order.setPhoneNumber(request.getPhoneNumber());
+        order.setComment(request.getComment() != null ? request.getComment() : "");
         order.setStatus(OrderStatus.CREATED);
         order.setCreatedAt(LocalDateTime.now());
-
         order = orderRepository.save(order);
 
         for(OrderItem item : orderItems){
@@ -280,6 +280,13 @@ public class CheckoutService {
         return activeDiscounts.stream()
                 .filter(d -> applicableDiscountIds.contains(d.getId()))
                 .toList();
+    }
+
+    public OrderAdminDto getCurrentOrder(Integer userId){
+        return Objects.requireNonNull(orderRepository.findCurrentOrder(userId, PageRequest.of(0, 1))
+                .stream()
+                .findFirst()
+                .orElse(null)).mapToAdminDto();
     }
 
 }

@@ -4,13 +4,11 @@ import com.sushi.wasabi.dto.*;
 import com.sushi.wasabi.entity.Order;
 import com.sushi.wasabi.entity.User;
 import com.sushi.wasabi.services.CheckoutService;
+import com.sushi.wasabi.services.PushNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CheckoutController {
 private final CheckoutService checkoutService;
+private final PushNotificationService pushNotificationService;
 
 @PostMapping
     public ResponseEntity<OrderResponseDto> checkout(
@@ -26,6 +25,7 @@ private final CheckoutService checkoutService;
         @RequestBody CheckoutRequest request
         ) {
     Order order = checkoutService.checkout(user,request);
+    pushNotificationService.sendToAdminDevices("New order","You have a new order from: " + user.getFirstName(), "order");
     return ResponseEntity.ok(OrderResponseDto.from(order));
 }
 
@@ -45,6 +45,13 @@ public ResponseEntity<List<DiscountDto>> availableDiscounts(
 ) {
     CheckoutPreviewDto previewDto = checkoutService.preview(user,request);
     return ResponseEntity.ok(previewDto);
+}
+
+@GetMapping("/current-order")
+    public OrderAdminDto getUserCurrentOrder(
+            @AuthenticationPrincipal User user
+){
+    return checkoutService.getCurrentOrder(user.getId());
 }
 
 }

@@ -9,5 +9,8 @@ import java.util.List;
 @Setter
 public class CheckoutRequest {
     private List<CartItemRequest> items;
+    private String comment;
+    private String phoneNumber;
+    private String address;
     private Long discountId;
 }

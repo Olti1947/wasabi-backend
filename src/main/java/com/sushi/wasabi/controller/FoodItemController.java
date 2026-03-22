@@ -2,6 +2,7 @@ package com.sushi.wasabi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sushi.wasabi.dto.ApiResponse;
 import com.sushi.wasabi.dto.FoodItemDto;
 import com.sushi.wasabi.dto.FoodItemRequest;
 import com.sushi.wasabi.entity.FoodItem;
@@ -39,7 +40,7 @@ public FoodItem getFoodById(@PathVariable Integer id){
 @PostMapping(value = "/admin/food",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 )
-    public ResponseEntity<Void> addFoodItem(
+    public ResponseEntity<ApiResponse<Void>> addFoodItem(
         @RequestPart("data") String data,
         @RequestPart("image")MultipartFile image
         ) throws JsonProcessingException {
@@ -47,13 +48,17 @@ public FoodItem getFoodById(@PathVariable Integer id){
     FoodItemRequest food = mapper.readValue(data, FoodItemRequest.class);
     String imageUrl = imageService.uploadFoodImage(image);
     foodItemService.addFoodItem(food, imageUrl);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+    return ResponseEntity.ok(
+            new ApiResponse<>(true, "Added food item successfully", null)
+    );
 }
 
 @DeleteMapping("/admin/{id}")
-    public ResponseEntity<Void> deleteFoodItem(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Void>> deleteFoodItem(@PathVariable Integer id) {
     foodItemService.deleteFoodItem(id);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(
+            new ApiResponse<>(true, "Item deleted successfully", null)
+    );
 }
 }
 

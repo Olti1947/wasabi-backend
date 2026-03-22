@@ -88,7 +88,7 @@ public void useDiscount(Integer userId, Long discountId) {
     discountRepository.save(discount);
 
     for(Integer productId: discountRequest.getProductIds()) {
-        FoodItem foodItem = foodItemRepository.findById(productId)
+        FoodItem foodItem = foodItemRepository.findByIdAndDeletedAtIsNull(productId)
                 .orElseThrow(()-> new RuntimeException("Product not found: " + productId));
 
         DiscountProduct dp = new DiscountProduct();

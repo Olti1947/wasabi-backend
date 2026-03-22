@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.sushi.wasabi.entity.DeviceToken;
+import com.sushi.wasabi.entity.Role;
 import com.sushi.wasabi.entity.User;
 import com.sushi.wasabi.repository.DeviceTokenRepository;
 import com.sushi.wasabi.repository.UserRepository;
@@ -65,6 +66,19 @@ public class PushNotificationService {
         DeviceToken deviceToken = deviceTokenRepository.findByToken(token).orElseThrow(() -> new RuntimeException("No such device token"));
 
         deviceTokenRepository.delete(deviceToken);
+
+    }
+
+    @Transactional
+    public void sendToAdminDevices(String title, String body, String event){
+        List<User> adminUsers = userRepository.findAllByRole(Role.ADMIN);
+
+        for(User user : adminUsers){
+            List<DeviceToken> userTokens = user.getDeviceTokens();
+            for(DeviceToken deviceToken : userTokens) {
+                sendNotification(deviceToken.getToken(), title, body, event);
+            }
+        }
 
     }
 

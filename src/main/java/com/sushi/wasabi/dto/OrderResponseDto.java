@@ -17,6 +17,9 @@ public class OrderResponseDto {
     private BigDecimal total;
     private OrderStatus status;
     private LocalDateTime createdAt;
+    private String phoneNumber;
+    private String address;
+    private String comment;
 
     public static OrderResponseDto from(Order order) {
         return OrderResponseDto.builder()
@@ -25,6 +28,9 @@ public class OrderResponseDto {
                 .discount(order.getDiscountTotal())
                 .total(order.getTotal())
                 .status(order.getStatus())
+                .phoneNumber(order.getPhoneNumber())
+                .address(order.getAddress())
+                .comment(order.getComment())
                 .createdAt(order.getCreatedAt())
                 .build();
     }
