@@ -10,6 +10,8 @@ import com.sushi.wasabi.dto.DiscountDto;
 import com.sushi.wasabi.services.DiscountService;
 import com.sushi.wasabi.services.ImageService;
 import com.sushi.wasabi.services.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/discounts")
 @RequiredArgsConstructor
+@Tag(name = "Discount", description = "Operations for managing user discounts")
 public class DiscountController {
 
     private final DiscountService discountService;
@@ -31,6 +34,10 @@ public class DiscountController {
     private final ObjectMapper objectMapper;
 
     // 1️⃣ List all available discounts
+    @Operation(
+            summary = "Get Available Discounts",
+            description = "Returns all available discounts for a user"
+    )
     @GetMapping("/available")
     public ResponseEntity<List<DiscountDto>> getAvailableDiscounts() {
         Integer userId = jwtService.getCurrentUserId();
@@ -39,6 +46,10 @@ public class DiscountController {
     }
 
     // 2️⃣ Activate a discount for a user
+    @Operation(
+            summary = "Activate discounts",
+            description = "Activates specific discount for a user"
+    )
     @PostMapping("/activate")
     public ResponseEntity<Void> activateDiscount(@RequestBody ActivateDiscountRequest request) {
         Integer userId = jwtService.getCurrentUserId();
@@ -47,6 +58,10 @@ public class DiscountController {
     }
 
     // 3️⃣ List user’s active discounts
+    @Operation(
+            summary = "Get User Active Discounts",
+            description = "Returns all active discounts of that user"
+    )
     @GetMapping("/user-active")
     public ResponseEntity<List<DiscountDto>> getUserActiveDiscounts() {
         Integer userId = jwtService.getCurrentUserId();
@@ -54,6 +69,10 @@ public class DiscountController {
         return ResponseEntity.ok(discounts);
     }
 
+    @Operation(
+            summary = "Post new discount",
+            description = "Post a new discount as an admin"
+    )
     @PostMapping(value = "/admin",
     consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> addDiscount(
@@ -66,12 +85,20 @@ public class DiscountController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(
+            summary = "Delete discount",
+            description = "Delete specific discount as an admin"
+    )
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<Void> deleteDiscount(@PathVariable Long id) {
         discountService.deleteDiscount(id);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(
+            summary = "Use discount",
+            description = "Mark a discount used for a user"
+    )
     @PostMapping("/admin/use")
     public ResponseEntity<Void> useDiscount (@RequestBody AdminUseDiscountDto useDiscountDto) {
         discountService.useDiscount(useDiscountDto.getUserId(), useDiscountDto.getDiscountId());
