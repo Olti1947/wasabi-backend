@@ -4,6 +4,8 @@ import com.sushi.wasabi.entity.SupportMessage;
 import com.sushi.wasabi.entity.User;
 import com.sushi.wasabi.services.ChatService;
 import com.sushi.wasabi.services.PushNotificationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -15,12 +17,17 @@ import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
+@Tag(name = "Chat", description = "Operations for managing live chat features")
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatService chatService;
     private final PushNotificationService pushNotificationService;
 
+    @Operation(
+            summary = "Send Support Message",
+            description = "Send live chat message to all admin users"
+    )
     // 1️⃣ User sends message → broadcast to all admins
     @MessageMapping("/support.send")
     public void userToAdmin(@Payload SupportMessage message, Principal principal) {
@@ -34,6 +41,10 @@ public class ChatController {
         chatService.publishAdminUnreadCounts();
     }
 
+    @Operation(
+            summary = "Response Support Message",
+            description = "Send live chat message to specific user"
+    )
     // 2️⃣ Admin replies → send only to specific user
     @MessageMapping("/support.reply")
     public void adminToUser(@Payload SupportMessage message, Principal principal) {

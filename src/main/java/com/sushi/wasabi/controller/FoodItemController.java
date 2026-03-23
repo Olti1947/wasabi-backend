@@ -8,6 +8,8 @@ import com.sushi.wasabi.dto.FoodItemRequest;
 import com.sushi.wasabi.entity.FoodItem;
 import com.sushi.wasabi.services.FoodItemService;
 import com.sushi.wasabi.services.ImageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,10 +21,16 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("api/foods")
 @RequiredArgsConstructor
+@Tag(name = "Food Items", description = "Operations for managing menu food items")
 public class FoodItemController {
 private final FoodItemService foodItemService;
 private final ImageService imageService;
 
+
+    @Operation(
+            summary = "Get all foods",
+            description = "Returns paginated all foods"
+    )
 @GetMapping
 public Page<FoodItemDto> getAllFoods(
         @RequestParam(defaultValue = "0") int page,
@@ -32,11 +40,19 @@ public Page<FoodItemDto> getAllFoods(
             return foodItemService.getFoods(page,size,search);
 }
 
+    @Operation(
+            summary = "Get Specific Food Item",
+            description = "Returns specific food item"
+    )
 @GetMapping("/{id}")
 public FoodItem getFoodById(@PathVariable Integer id){
     return foodItemService.getById(id);
 }
 
+    @Operation(
+            summary = "Post new food",
+            description = "Add a new food item to menu as an admin."
+    )
 @PostMapping(value = "/admin/food",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 )
@@ -53,6 +69,10 @@ public FoodItem getFoodById(@PathVariable Integer id){
     );
 }
 
+    @Operation(
+            summary = "Delete food item",
+            description = "Delete specific food item as an admin"
+    )
 @DeleteMapping("/admin/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteFoodItem(@PathVariable Integer id) {
     foodItemService.deleteFoodItem(id);
