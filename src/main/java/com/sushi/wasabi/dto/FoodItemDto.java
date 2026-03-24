@@ -14,5 +14,6 @@ public class FoodItemDto {
     private String description;
     private BigDecimal price;
     private String imageUrl;
+    private Boolean popular;
     private List<String> ingredients;
 }
