@@ -2,9 +2,7 @@ package com.sushi.wasabi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sushi.wasabi.dto.ApiResponse;
-import com.sushi.wasabi.dto.FoodItemDto;
-import com.sushi.wasabi.dto.FoodItemRequest;
+import com.sushi.wasabi.dto.*;
 import com.sushi.wasabi.entity.FoodItem;
 import com.sushi.wasabi.services.FoodItemService;
 import com.sushi.wasabi.services.ImageService;
@@ -51,6 +49,12 @@ public FoodItem getFoodById(@PathVariable Integer id){
     return foodItemService.getById(id);
 }
 
+    @GetMapping("/summary/{id}")
+    public EditFoodItemResponse getFoodSummaryById(@PathVariable Integer id){
+        return foodItemService.getEditSummary(id);
+    }
+
+
     @Operation(
             summary = "Post new food",
             description = "Add a new food item to menu as an admin."
@@ -81,6 +85,18 @@ public FoodItem getFoodById(@PathVariable Integer id){
             summary = "Delete food item",
             description = "Delete specific food item as an admin"
     )
+
+    @PutMapping(value = "/admin/food")
+    public ResponseEntity<ApiResponse<Void>> editFoodItem(
+            @RequestBody EditFoodItemDto editFoodItemDto
+            ){
+        foodItemService.editFoodItem(editFoodItemDto);
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Edited food item successfully", null)
+        );
+    }
+
+
 @DeleteMapping("/admin/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteFoodItem(@PathVariable Integer id) {
     foodItemService.deleteFoodItem(id);
