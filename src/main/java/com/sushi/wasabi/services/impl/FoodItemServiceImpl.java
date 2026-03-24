@@ -1,5 +1,7 @@
 package com.sushi.wasabi.services.impl;
 
+import com.sushi.wasabi.dto.EditFoodItemDto;
+import com.sushi.wasabi.dto.EditFoodItemResponse;
 import com.sushi.wasabi.dto.FoodItemDto;
 import com.sushi.wasabi.dto.FoodItemRequest;
 import com.sushi.wasabi.entity.FoodItem;
@@ -74,5 +76,29 @@ public class FoodItemServiceImpl implements FoodItemService {
     @Override
     public List<FoodItemDto> getPopularFoods() {
          return foodItemRepository.findAllByPopularTrue().stream().map(FoodItem::toDto).toList();
+    }
+
+    @Override
+    public void editFoodItem(EditFoodItemDto foodItemDto) {
+        FoodItem foodItem = foodItemRepository.findById(foodItemDto.getId()).orElseThrow(() -> new RuntimeException("No such food item"));
+        foodItem.setName(foodItemDto.getName());
+        foodItem.setDescription(foodItemDto.getDescription());
+        foodItem.setPopular(foodItemDto.getPopular());
+        foodItem.setPrice(foodItemDto.getPrice());
+        foodItem.setIngredients(foodItemDto.getIngredients());
+
+        foodItemRepository.save(foodItem);
+    }
+
+    @Override
+    public EditFoodItemResponse getEditSummary(Integer id) {
+        EditFoodItemResponse response = new EditFoodItemResponse();
+        FoodItem foodItem = foodItemRepository.findById(id).orElseThrow(() -> new RuntimeException("No such food item"));
+        response.setName(foodItem.getName());
+        response.setDescription(foodItem.getDescription());
+        response.setPrice(foodItem.getPrice());
+        response.setPopular(foodItem.getPopular());
+        response.setIngredients(foodItem.getIngredients());
+        return response;
     }
 }
