@@ -33,5 +33,7 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Integer> {
 
     Page<FoodItem> findByDeletedAtIsNull(Pageable pageable);
 
+    List<FoodItem> findAllByPopularTrue();
+
     void deleteById(Integer id);
 }

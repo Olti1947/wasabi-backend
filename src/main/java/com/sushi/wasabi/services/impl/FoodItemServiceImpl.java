@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +54,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItem.setName(foodItemRequest.getName());
         foodItem.setDescription(foodItemRequest.getDescription());
         foodItem.setImageUrl(imageUrl);
+        foodItem.setPopular(foodItemRequest.getPopular());
         foodItem.setPrice(foodItemRequest.getPrice());
         foodItem.setIngredients(foodItemRequest.getIngredients());
 
@@ -67,5 +69,10 @@ public class FoodItemServiceImpl implements FoodItemService {
 
         foodItem.setDeletedAt(LocalDateTime.now());
         foodItemRepository.save(foodItem);
+    }
+
+    @Override
+    public List<FoodItemDto> getPopularFoods() {
+         return foodItemRepository.findAllByPopularTrue().stream().map(FoodItem::toDto).toList();
     }
 }

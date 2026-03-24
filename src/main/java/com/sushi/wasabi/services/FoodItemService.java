@@ -6,6 +6,8 @@ import com.sushi.wasabi.entity.FoodItem;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface FoodItemService {
     Page<FoodItemDto> getFoods(int page, int size, String search);
@@ -13,6 +15,8 @@ public interface FoodItemService {
     FoodItem getById(Integer id);
 
     void addFoodItem(FoodItemRequest foodItemRequest, String imageUrl);
+
+    List<FoodItemDto> getPopularFoods();
 
     void deleteFoodItem(Integer id);
 }

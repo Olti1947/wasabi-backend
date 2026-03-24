@@ -9,6 +9,7 @@ import java.util.List;
 public class FoodItemRequest {
     private String name;
     private String description;
+    private Boolean popular;
     private BigDecimal price;
     private List<String> ingredients;
 

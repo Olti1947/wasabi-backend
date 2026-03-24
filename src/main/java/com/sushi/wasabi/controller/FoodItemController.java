@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/foods")
 @RequiredArgsConstructor
@@ -53,6 +55,12 @@ public FoodItem getFoodById(@PathVariable Integer id){
             summary = "Post new food",
             description = "Add a new food item to menu as an admin."
     )
+
+    @GetMapping("/popular")
+    public List<FoodItemDto> getPopularFood(){
+        return foodItemService.getPopularFoods();
+    }
+
 @PostMapping(value = "/admin/food",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 )

@@ -30,6 +30,7 @@ public class FoodItem {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
     private String imageUrl;
+    private Boolean popular;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
@@ -48,6 +49,7 @@ public class FoodItem {
                 this.getDescription(),
                 this.getPrice(),
                 this.getImageUrl(),
+                this.getPopular(),
                 this.getIngredients()
         );
     }
