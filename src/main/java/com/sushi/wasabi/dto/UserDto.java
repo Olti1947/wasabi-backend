@@ -20,4 +20,5 @@ public class UserDto {
     private Role role;
     private String qrCodeToken;
     private BigDecimal spending;
+    private String phone;
 }

@@ -50,6 +50,9 @@ public class User implements UserDetails {
     @Column
     private BigDecimal spending;
 
+    @Column
+    private String phone;
+
     @JsonIgnore
     @OneToMany
             (
@@ -58,6 +61,13 @@ public class User implements UserDetails {
                     cascade = CascadeType.ALL
             )
     List<DeviceToken> deviceTokens = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            orphanRemoval = true,
+            cascade = CascadeType.ALL
+    )
+    List<Address> addresses = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -82,6 +92,7 @@ public class User implements UserDetails {
                 .lastName(this.getLastName())
                 .qrCodeToken(this.qrCodeToken)
                 .spending(this.spending)
+                .phone(this.phone)
                 .build();
     }
 
