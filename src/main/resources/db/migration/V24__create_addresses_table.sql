@@ -1,0 +1,22 @@
+CREATE TABLE addresses (
+id BIGSERIAL PRIMARY KEY,
+
+user_id INTEGER NOT NULL,
+
+label VARCHAR(50),
+
+street VARCHAR(255) NOT NULL,
+city VARCHAR(100) NOT NULL,
+postal_code VARCHAR(20),
+
+is_default BOOLEAN DEFAULT FALSE,
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+CONSTRAINT fk_user
+FOREIGN KEY (user_id) REFERENCES users(id)
+ON DELETE CASCADE
+);
+
+CREATE INDEX idx_addresses_user_id ON addresses(user_id);
