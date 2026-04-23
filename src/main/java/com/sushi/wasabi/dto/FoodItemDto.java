@@ -1,5 +1,6 @@
 package com.sushi.wasabi.dto;
 
+import com.sushi.wasabi.enums.FoodCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,5 +16,7 @@ public class FoodItemDto {
     private BigDecimal price;
     private String imageUrl;
     private Boolean popular;
+    private FoodCategory category;
+    private Boolean baked;
     private List<String> ingredients;
 }

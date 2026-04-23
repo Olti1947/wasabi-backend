@@ -5,6 +5,7 @@ import com.sushi.wasabi.dto.EditFoodItemResponse;
 import com.sushi.wasabi.dto.FoodItemDto;
 import com.sushi.wasabi.dto.FoodItemRequest;
 import com.sushi.wasabi.entity.FoodItem;
+import com.sushi.wasabi.enums.FoodCategory;
 import com.sushi.wasabi.repository.FoodItemRepository;
 import com.sushi.wasabi.services.FoodItemService;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,7 +24,7 @@ public class FoodItemServiceImpl implements FoodItemService {
         private final FoodItemRepository foodItemRepository;
 
         @Override
-        public Page<FoodItemDto> getFoods(int page, int size, String search) {
+        public Page<FoodItemDto> getFoods(int page, int size, String search, FoodCategory foodCategory, Boolean baked) {
 
             PageRequest pageRequest = PageRequest.of(
                     page,
@@ -32,12 +33,17 @@ public class FoodItemServiceImpl implements FoodItemService {
             );
 
             Page<FoodItem> foods;
-            if (search == null || search.trim().isEmpty()) {
-                foods = foodItemRepository.findByDeletedAtIsNull(pageRequest);
-            } else {
+            if (search != null && !search.trim().isEmpty()) {
                 foods = foodItemRepository.searchFoods(search.toLowerCase(), pageRequest);
             }
-            return foods.map(food -> food.toDto()
+            else if (foodCategory != null || baked != null) {
+                String categoryStr = (foodCategory != null) ? foodCategory.name() : null;
+                foods = foodItemRepository.findByCategoryAndBaked(categoryStr, baked, pageRequest);
+            }
+            else {
+                foods = foodItemRepository.findByDeletedAtIsNull(pageRequest);
+            }
+            return foods.map(FoodItem::toDto
             );
 
         }
@@ -58,6 +64,8 @@ public class FoodItemServiceImpl implements FoodItemService {
         foodItem.setImageUrl(imageUrl);
         foodItem.setPopular(foodItemRequest.getPopular());
         foodItem.setPrice(foodItemRequest.getPrice());
+        foodItem.setCategory(foodItemRequest.getFoodCategory());
+        foodItem.setBaked(foodItemRequest.getBaked());
         foodItem.setIngredients(foodItemRequest.getIngredients());
 
         foodItemRepository.save(foodItem);
