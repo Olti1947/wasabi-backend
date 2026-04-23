@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sushi.wasabi.dto.*;
 import com.sushi.wasabi.entity.FoodItem;
+import com.sushi.wasabi.enums.FoodCategory;
 import com.sushi.wasabi.services.FoodItemService;
 import com.sushi.wasabi.services.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,9 +36,11 @@ private final ImageService imageService;
 public Page<FoodItemDto> getAllFoods(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
-        @RequestParam(required = false) String search
+        @RequestParam(required = false) String search,
+        @RequestParam(required = false) FoodCategory category,
+        @RequestParam(required = false) Boolean baked
 ){
-            return foodItemService.getFoods(page,size,search);
+            return foodItemService.getFoods(page,size,search,category,baked);
 }
 
     @Operation(
@@ -103,6 +106,6 @@ public FoodItem getFoodById(@PathVariable Integer id){
     return ResponseEntity.ok(
             new ApiResponse<>(true, "Item deleted successfully", null)
     );
-}
+    }
 }
 

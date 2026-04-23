@@ -1,5 +1,6 @@
 package com.sushi.wasabi.dto;
 
+import com.sushi.wasabi.enums.FoodCategory;
 import lombok.Data;
 
 import java.math.BigDecimal;

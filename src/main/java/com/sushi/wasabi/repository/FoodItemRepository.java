@@ -1,6 +1,7 @@
 package com.sushi.wasabi.repository;
 
 import com.sushi.wasabi.entity.FoodItem;
+import com.sushi.wasabi.enums.FoodCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,6 +25,20 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Integer> {
 """)
     Page<FoodItem> searchFoods(
             @Param("search") String search,
+            Pageable pageable
+    );
+
+    @Query(value = """
+    SELECT * FROM food_items f
+    WHERE (:category IS NULL OR f.category = CAST(:category AS food_category))
+      AND (:baked IS NULL OR f.baked = :baked)
+      AND f.deleted_at IS NULL
+    """,
+            countQuery = "SELECT count(*) FROM food_items WHERE deleted_at IS NULL",
+            nativeQuery = true)
+    Page<FoodItem> findByCategoryAndBaked(
+            @Param("category") String category,
+            @Param("baked") Boolean baked,
             Pageable pageable
     );
 
