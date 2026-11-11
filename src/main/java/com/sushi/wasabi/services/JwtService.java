@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -29,6 +30,17 @@ private final UserDetailsService userDetailsService;
 
 @Value("${jwt.secretKey}")
 private String SECRET_KEY;
+
+// Fail on startup instead of on every login when the secret is missing or too weak.
+@PostConstruct
+void validateSecretKey() {
+    try {
+        getSignInKey();
+    } catch (RuntimeException e) {
+        throw new IllegalStateException(
+                "JWT_SECRET must be a Base64 key of at least 256 bits. Generate one with: openssl rand -base64 32", e);
+    }
+}
 
 public String extractUserName(String token) {
     return extractClaim(token, Claims::getSubject);
