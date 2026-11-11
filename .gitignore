@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### ENVIRONMENT VARIABLES ###
+.env
+.env.*
+!.env.example
+
+### LOCAL DATABASE DATA ###
+/postgresql/
+
+/src/main/resources/firebase-service-account/

@@ -1,0 +1,2 @@
+ALTER TABLE public.food_items
+ADD COLUMN popular BOOLEAN DEFAULT FALSE;

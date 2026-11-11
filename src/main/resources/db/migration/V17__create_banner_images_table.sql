@@ -1,0 +1,6 @@
+CREATE TABLE banner_images (
+id BIGSERIAL PRIMARY KEY,
+imageUrl TEXT NOT NULL,
+description TEXT,
+is_active BOOLEAN NOT NULL DEFAULT TRUE
+)
